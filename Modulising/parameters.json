@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "bicepparameters": {
+            "value": {
+                "storageaccount": {
+                    "name": "ah",
+                    "location": "uksouth",
+                    "prefix": "uks",
+                    "globalredundancy": true
+                },
+                "blobs": {
+                    "names": [
+                        "test",
+                        "joe",
+                        "getin"
+                    ]
+                }
+            }
+        },
+        "naming":{
+            "value": {
+                "rgname": "lz-rg-diag",
+                "suffix": "jp",
+                "prefix": "jp"
+                }
+            },
+        "networking": {
+            "value": {
+                "virtualnetwork": {
+                    "virtualnetworkname": "vnet1",
+                    "virtualnetworktags": {
+                        "costcentre": "tag",
+                        "place": "nottingham"
+                    },
+                    "addressprefix": [
+                        "172.10.0.0/16"
+                    ],
+                    "enablevmprotection": true,
+                    "enableddos": false,
+                    "subnets": [
+                        {
+                            "name": "subnet1",
+                            "properties": {
+                                "addressprefix": "172.10.20.0/24"
+                            }
+                        },
+                        {
+                            "name": "subnet2",
+                            "properties": {
+                                "addressprefix": "172.10.21.0/24"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
