@@ -19,3 +19,6 @@ resource vnet 'Microsoft.Network/virtualNetworks@2018-10-01' = {
     subnets: subnets
   }
 }
+
+output vnetid string = vnet.id
+output vnetname string = vnet.name
