@@ -3,6 +3,21 @@ param resourcetags object
 param resourceidentity object
 param resourceplan object
 param resourcezones array
+param enableultrassd bool
+param inavailabilityset bool
+param availabilitysetid string
+param bootdiagnosticsstorageuri string
+param resourcesize string
+param licencetype string
+param resourcenicid string
+param primarynic bool = true
+param vmadminusername string
+@secure()
+param vmadminpassword string
+param vmcomputername string
+param islinux bool = false
+param linuxconfiguration object
+
 
 
 resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
@@ -13,56 +28,38 @@ resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
   plan: resourceplan
   properties:  {
     additionalCapabilities: {
-      ultraSSDEnabled: bool
+      ultraSSDEnabled: enableultrassd ? 'true' : 'false'
     }
     availabilitySet: {
-      id: 'string'
+      id: inavailabilityset ? availabilitysetid : 'null'
     }
   
     diagnosticsProfile: {
       bootDiagnostics: {
-        enabled: bool
-        storageUri: 'string'
+        enabled: true
+        storageUri: bootdiagnosticsstorageuri
       }
     }
     hardwareProfile: {
-      vmSize: 'string'
+      vmSize: resourcesize
     }
-    licenseType: 'string'
+    licenseType: licencetype
     networkProfile: {
       networkInterfaces: [
         {
-          id: 'string'
+          id: resourcenicid
           properties: {
-            deleteOption: 'string'
-            primary: bool
+            primary: primarynic
           }
         }
       ]
     }
     osProfile: {
-      adminPassword: 'string'
-      adminUsername: 'string'
-      allowExtensionOperations: bool
-      computerName: 'string'
-      customData: 'string'
-      linuxConfiguration: {
-        disablePasswordAuthentication: bool
-        patchSettings: {
-          assessmentMode: 'string'
-          patchMode: 'string'
-        }
-        provisionVMAgent: bool
-        ssh: {
-          publicKeys: [
-            {
-              keyData: 'string'
-              path: 'string'
-            }
-          ]
-        }
-      }
-      requireGuestProvisionSignal: bool
+      adminPassword: vmadminpassword
+      adminUsername: vmadminusername
+      allowExtensionOperations: true
+      computerName: vmcomputername
+      linuxConfiguration: islinux ? linuxconfiguration : 'null'
       secrets: [
         {
           sourceVault: {

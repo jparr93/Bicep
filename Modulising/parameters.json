@@ -1,60 +1,342 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "bicepparameters": {
-            "value": {
-                "storageaccount": {
-                    "name": "ah",
-                    "location": "uksouth",
-                    "prefix": "uks",
-                    "globalredundancy": true
-                },
-                "blobs": {
-                    "names": [
-                        "test",
-                        "joe",
-                        "getin"
-                    ]
-                }
-            }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resources": {
+      "value": {
+        "naming": {
+          "rgname": "lz-rg-diag",
+          "suffix": "jp",
+          "prefix": "jp"
         },
-        "naming":{
-            "value": {
-                "rgname": "lz-rg-diag",
-                "suffix": "jp",
-                "prefix": "jp"
-                }
-            },
-        "networking": {
-            "value": {
-                "virtualnetwork": {
-                    "virtualnetworkname": "vnet1",
-                    "virtualnetworktags": {
-                        "costcentre": "tag",
-                        "place": "nottingham"
-                    },
-                    "addressprefix": [
-                        "172.10.0.0/16"
-                    ],
-                    "enablevmprotection": true,
-                    "enableddos": false,
-                    "subnets": [
-                        {
-                            "name": "subnet1",
-                            "properties": {
-                                "addressprefix": "172.10.20.0/24"
-                            }
-                        },
-                        {
-                            "name": "subnet2",
-                            "properties": {
-                                "addressprefix": "172.10.21.0/24"
-                            }
-                        }
-                    ]
-                }
-            }
+        "resourcegroupnames": [
+          "rg1",
+          "rg2"
+        ],
+        "location": "uksouth"
+      }
+    },
+    "storage": {
+      "value": {
+        "storageaccount": {
+          "name": "ah",
+          "location": "uksouth",
+          "prefix": "uks",
+          "globalredundancy": true
+        },
+        "blobs": {
+          "names": [
+            "test",
+            "joe",
+            "getin"
+          ]
         }
+      }
+    },
+    "networking": {
+      "value": {
+        "virtualnetwork": {
+          "virtualnetworkname": "vnet1",
+          "virtualnetworktags": {
+            "costcentre": "tag",
+            "place": "nottingham"
+          },
+          "properties": {
+            "addressSpace": {
+              "addressPrefixes": [
+                "172.10.0.0/16"
+              ]
+            },
+            "enableVmProtection": true,
+            "enableDdosProtection": false,
+            "subnets": [
+              {
+                "name": "subnet1",
+                "properties": {
+                  "addressprefix": "172.10.20.0/24",
+                  "privateEndpointNetworkPolicies": "Disabled"
+                }
+              },
+              {
+                "name": "GatewaySubnet",
+                "properties": {
+                  "addressprefix": "172.10.21.0/24"
+                }
+              },
+              {
+                "name": "AzureFirewallSubnet",
+                "properties": {
+                  "addressprefix": "172.10.22.0/24"
+                }
+              }
+            ]
+          }
+        },
+        "privateendpoints": {
+          "privatednszonenames": [
+            "privatelink.blob.core.windows.net",
+            "privatelink.file.core.windows.net"
+          ]
+        },
+        "gateway": {
+          "tags": {
+            "costcenter": "tig",
+            "place": "derby"
+          },
+          "activeactive": false,
+          "enablebgp": false,
+          "enablednsforwarding": false,
+          "enableprivateipaddress": false,
+          "gatewayipconfigurationname": "ipconfigur01",
+          "gatewaytype": "VPN",
+          "vpntype": "RouteBased",
+          "gatewaysku": {
+            "name": "VpnGw1AZ",
+            "tier": "VpnGw1AZ"
+          },
+          "gatewaygeneration": "Generation1",
+          "privateipallocation": "Dynamic"
+        },
+        "gatewaypublicip": {
+          "sku": {
+            "name": "standard"
+          },
+          "properties": {
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "idleTimeoutInMinutes": 4
+          },
+          "zones": [
+            "1"
+          ]
+        },
+        "localgateway": {
+          "tags": {
+            "costcenter": "tig",
+            "place": "leics"
+          },
+          "properties": {
+            "localNetworkAddressSpace": {
+              "addressPrefixes": [
+                "10.156.64.0/19"
+              ]
+            },
+            "gatewayIpAddress": "109.232.61.236"
+          }
+        },
+        "firewall": {
+          "azfwpublicip": {
+            "sku": {
+              "name": "standard"
+            },
+            "properties": {
+              "publicIPAddressVersion": "IPv4",
+              "publicIPAllocationMethod": "Static",
+              "idleTimeoutInMinutes": 4
+            },
+            "zones": [
+              "1",
+              "2"
+            ]
+          },
+          "properties": {
+            "sku": {
+              "name": "AZFW_VNet",
+              "tier": "Standard"
+            },
+            "tags": {
+              "firewall": "narh"
+            },
+            "zones": [
+              "1",
+              "2"
+            ],
+            "rules": {
+              "applicationrulcollections": [
+                {
+                  "name": "App-Log-Analytics-Outbound",
+                  "properties": {
+                    "priority": "120",
+                    "action": {
+                      "type": "Allow"
+                    },
+                    "rules": [
+                      {
+                        "name": "VMs-to-Log-Analytics-Advisor",
+                        "protocols": [
+                          {
+                            "port": "443",
+                            "protocolType": "Https"
+                          }
+                        ],
+                        "sourceAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.1.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "46346666771915772advisor.blob.core.windows.net"
+                        ]
+                      },
+                      {
+                        "name": "VMs-to-Log-Analytics-SC-Advisor-Content",
+                        "protocols": [
+                          {
+                            "port": "443",
+                            "protocolType": "Https"
+                          }
+                        ],
+                        "sourceAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.1.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "scadvisorcontent.blob.core.windows.net"
+                        ]
+                      },
+                      {
+                        "name": "VMs-to-Log-Analytics-SC-Advisor-Content-Pl",
+                        "protocols": [
+                          {
+                            "port": "443",
+                            "protocolType": "Https"
+                          }
+                        ],
+                        "sourceAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.1.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "scadvisorcontentpl.blob.core.windows.net"
+                        ]
+                      },
+                      {
+                        "name": "VMs-to-Log-Analytics-S-UK-OI-Oms",
+                        "protocols": [
+                          {
+                            "port": "443",
+                            "protocolType": "Https"
+                          }
+                        ],
+                        "sourceAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.1.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "sukoioms.blob.core.windows.net"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "natrulecollections": [],
+              "networkrulecollections": [
+                {
+                  "name": "Net-Kerberos-Inbound",
+                  "properties": {
+                    "priority": "180",
+                    "action": {
+                      "type": "Allow"
+                    },
+                    "rules": [
+                      {
+                        "name": "Kerberos-Clients-to-KDC",
+                        "protocols": [
+                          "TCP",
+                          "UDP"
+                        ],
+                        "sourceAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "destinationAddresses": [
+                          "10.1.1.0/24"
+                        ],
+                        "destinationPorts": [
+                          "88"
+                        ]
+                      },
+                      {
+                        "name": "Kerberos-Clients-to-KDC-Password-Change",
+                        "protocols": [
+                          "TCP",
+                          "UDP"
+                        ],
+                        "sourceAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "destinationAddresses": [
+                          "10.1.1.0/24"
+                        ],
+                        "destinationPorts": [
+                          "464"
+                        ]
+                      },
+                      {
+                        "name": "KDC-to-Kerberos-Clients",
+                        "protocols": [
+                          "UDP"
+                        ],
+                        "sourceAddresses": [
+                          "10.1.1.0/24"
+                        ],
+                        "destinationAddresses": [
+                          "10.1.9.0/24",
+                          "10.1.11.0/24",
+                          "10.1.12.0/24"
+                        ],
+                        "destinationPorts": [
+                          "88"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "retentionpolicy": {
+              "days": 7,
+              "enabled": true
+            }
+          }
+        },
+      "loganalytics": {
+        "properties": {
+          "features": {
+            "enableDataExport": true,
+            "enableLogAccessUsingOnlyResourcePermissions": true,
+            "immediatePurgeDataOn30Days": false
+          },
+          "forceCmkForQuery": false,
+          "retentionInDays": 60,
+          "sku": {
+            "name": "PerGB2018"
+          },
+          "workspaceCapping": {
+            "dailyQuotaGb": 10
+          }
+        },
+        "tags": {
+          "cost": "tag",
+          "place": "nottingham"
+        }
+      }
     }
+  }
+}
 }
