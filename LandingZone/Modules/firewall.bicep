@@ -1,31 +1,39 @@
-param fwpipname string
-param fwpipresourcesku object
-param fwpipresourceproperties object
-param fwpipzones array
+param resourcepipname string
+param resourcepipsku object
+param resourcepipproperties object
 param resourcename string
 param resourcetags object
 param subnetid string
 param resourcezones array
 param resourcesku object
-param threatintelmode string = 'alert'
+@allowed([
+  'Alert'
+  'Deny'
+  'Off'
+])
+param threatintelmode string = 'Alert'
 param applicationrulecollections array
 param natrulecollections array
 param networkrulecollections array
-param diagnosticworkspaceid string
 param retentionpolicy object
-param diagnosticsaid string
+param loganalyticsworkspaceID string = ''
+param storageaccountID string =''
+param location string = resourceGroup().location
+param eventHubName string = ''
+param eventHubAuthorizationRuleId string
+param configurediagnostics bool 
 
 resource fwpip 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
-  name: fwpipname
-  location: resourceGroup().location
-  sku : fwpipresourcesku
-  properties: fwpipresourceproperties
-  zones: fwpipzones
+  name: resourcepipname
+  location: location
+  sku : resourcepipsku
+  properties: resourcepipproperties
+  zones: resourcezones
 }
 
 resource azfw 'Microsoft.Network/azureFirewalls@2021-02-01' = {
   name: resourcename
-  location: resourceGroup().location
+  location: location
   tags: resourcetags
   zones: resourcezones
   properties: {
@@ -52,7 +60,7 @@ resource azfw 'Microsoft.Network/azureFirewalls@2021-02-01' = {
   
 }
 
-resource lawdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+resource lawdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ((configurediagnostics) && !empty(loganalyticsworkspaceID)){
   name: 'AZFW-Law-Diag'
   scope: azfw
   properties: {
@@ -76,13 +84,11 @@ resource lawdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
         enabled: true
       }
     ]
-    workspaceId: diagnosticworkspaceid
+    workspaceId: loganalyticsworkspaceID
   }
 }
 
-
-
-resource sadiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+resource sadiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ((configurediagnostics) && !empty(storageaccountID)) {
   name: 'AZFW-sa-Diag'
   scope: azfw
   properties: {
@@ -110,6 +116,35 @@ resource sadiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
         retentionPolicy: retentionpolicy
       }
     ]
-    storageAccountId: diagnosticsaid
+    storageAccountId: storageaccountID
+  }
+}
+
+resource evntdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ((configurediagnostics) && !empty(eventHubName)){
+  name: 'AZFW-EventHub-Diag'
+  scope: azfw
+  properties: {
+    logs: [
+      {
+        category: 'AzureFirewallApplicationRule'
+        enabled: true
+      }
+      {
+        category: 'AzureFirewallNetworkRule'
+        enabled: true
+      }
+      {
+        category: 'AzureFirewallDnsProxy'
+        enabled: true
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+      }
+    ]
+    eventHubAuthorizationRuleId: eventHubAuthorizationRuleId
+    eventHubName: eventHubName
   }
 }

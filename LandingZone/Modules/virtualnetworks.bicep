@@ -2,10 +2,11 @@ param resourcename string
 param resourcetags object
 param subnets array
 param addressprefixes array
-param enablevmprotection bool
+param enablevmprotection bool = true
 param enableddosprotection bool
-param diagnosticname string
 param diagnosticworkspaceid string
+param retentionpolicy object
+param diagnosticsaid string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2018-10-01' = {
   name: resourcename
@@ -23,7 +24,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2018-10-01' = {
 }
 
 resource lawdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: diagnosticname
+  name: 'vnet-law-diag'
   scope: vnet
   properties: {
     logs: [
@@ -41,6 +42,29 @@ resource lawdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
     workspaceId: diagnosticworkspaceid
   }
 }
+
+resource sadiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'vnet-sa-Diag'
+  scope: vnet
+  properties: {
+    logs: [
+      {
+        category: 'VMProtectionAlerts'
+        enabled: true
+        retentionPolicy: retentionpolicy
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: retentionpolicy
+      }
+    ]
+    storageAccountId: diagnosticsaid
+  }
+}
+
 
 output vnetid string = vnet.id
 output vnetname string = vnet.name

@@ -1,11 +1,13 @@
 param resourcename string
 param globalRedundancy bool
-param blobs array
+param resourcetags object
+//param blobs array
 
 resource sa 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: resourcename // must be globally unique' 
   location: resourceGroup().location
   kind: 'StorageV2'
+  tags: resourcetags
   sku: {
     name: globalRedundancy ? 'Standard_GRS' : 'Standard_LRS'
   }
@@ -34,7 +36,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2019-06-01' = {
 
 output said string = sa.id
 
-resource blob 'Microsoft.Storage/storageAccounts/blobServices/containers@2019-06-01' = [for name in blobs: {
-  name: '${sa.name}/default/${name}'
+//resource blob 'Microsoft.Storage/storageAccounts/blobServices/containers@2019-06-01' = [for name in blobs: {
+  //name: '${sa.name}/default/${name}'
   // dependsOn will be added when the template is compiled
-}]
+//}]
