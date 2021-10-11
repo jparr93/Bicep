@@ -68,5 +68,10 @@ resource sadiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
 
 output vnetid string = vnet.id
 output vnetname string = vnet.name
-output subnetid string = '${vnet.id}/subnets/${subnets}'
+output subnetid string = '${vnet.id}/subnets/${subnets}.id'
+
+output subnetids array = [for i in range(0, length(subnets)): {
+  resourceid: reference(resourceId('Microsoft.Network/virtualNetworks', resourcename)).subnets[i].id
+}]
+
 output subnet1id string = reference(resourceId('Microsoft.Network/virtualNetworks', resourcename)).subnets[0].id

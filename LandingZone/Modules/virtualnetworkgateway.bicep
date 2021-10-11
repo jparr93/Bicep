@@ -17,11 +17,12 @@ param privateipallocation string
 param gatewaysubnetid string
 param vpntype string
 param configurediagnostics bool
+param retentionpolicy object
 param loganalyticsworkspaceID string = ''
 param storageaccountID string = ''
 param eventHubName string = ''
 param eventHubAuthorizationRuleId string
-param retentionpolicy string
+
 
 resource gwpip 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   name: resourcepipname
@@ -134,7 +135,7 @@ resource sadiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if 
         enabled: true
         retentionPolicy: retentionpolicy
       }
-    ]
+        ]
     storageAccountId: storageaccountID
   }
 }

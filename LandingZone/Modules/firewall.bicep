@@ -20,7 +20,7 @@ param loganalyticsworkspaceID string = ''
 param storageaccountID string =''
 param location string = resourceGroup().location
 param eventHubName string = ''
-param eventHubAuthorizationRuleId string
+param eventHubAuthorizationRuleId string = ''
 param configurediagnostics bool 
 
 resource fwpip 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
