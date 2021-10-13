@@ -15,7 +15,7 @@
                     "diag-rg",
                     "gateway-rg"
                 ],
-                "rg":"lz-rg-diag",
+                "rg": "lz-rg-diag",
                 "location": "uksouth",
                 "tags": {
                     "general": "work",
@@ -317,6 +317,44 @@
                             ]
                         }
                     }
+                },
+                "servicebus": {
+                    "resourcesku": {
+                        "capacity": 1,
+                        "name": "Standard",
+                        "tier": "Standard"
+                    },
+                    "identity": {
+                        "type": "none"
+                    },
+                    "premiumnamespace": true,
+                    "premiumresourcecapacity": 5,
+                    "keyvaultproperties": [
+                        {
+                            "identity": {
+                                "userAssignedIdentity": "string"
+                            },
+                            "keyvaultname": "kv",
+                            "keyvaulturi": "uri",
+                            "keyversion": "keyversion"
+                        }
+                    ]
+                },
+                "keyvault": {
+                    "resourcesku": {
+                        "family": "A",
+                        "name": "standard"
+                    },
+                    "tenantid": "6453880f-b587-4f4e-afd4-99b4ede5c65c",
+                    "accesspolicies": [
+                        {
+                            "permissions": {
+                              "keys": [
+                    ],
+                    "iprules":[
+                    ],
+                    "virtualnetworkrules": [
+                    ]
                 }
             }
         }
