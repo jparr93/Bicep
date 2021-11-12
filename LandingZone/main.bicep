@@ -68,7 +68,7 @@ module vnet './modules/virtualnetworks.bicep' = [for i in range(0, 4): {
   }
 }]
 
-module pvlink './Modules/privatedns.bicep' = {
+module pvdns './Modules/privatedns.bicep' = {
   name: 'pvlinkdeploy'
   scope: resourceGroup('hub-rg')
   dependsOn: [
@@ -90,7 +90,7 @@ module pve './modules/privateendpoint.bicep' = {
   scope: resourceGroup(rg[0].name)
   dependsOn: [
     rg
-    pvlink
+    pvdns
     stg
   ]
   params: {
@@ -108,12 +108,12 @@ module pvednszonegroup './Modules/privatednszonegroup.bicep' = {
   scope: resourceGroup(rg[0].name)
   dependsOn: [
     rg
-    pvlink
+    pvdns
     stg
     pve
   ]
   params: {
-    privatednszoneid: pvlink.outputs.prvdnsdata[0].resourceid
+    privatednszoneid: pvdns.outputs.prvdnsdata[0].resourceid
     zonegroupname: 'storage'
     privateEndpointname: pve.outputs.endpointname
   }
@@ -124,7 +124,7 @@ module servicebus './Modules/servicebus.bicep' = {
   scope: resourceGroup(rg[0].name)
   dependsOn: [
     rg
-    pvlink
+    pvdns
     stg
     pve
   ]
@@ -143,7 +143,7 @@ module keyvault './Modules/keyvault.bicep' = {
   scope: resourceGroup(rg[0].name)
   dependsOn: [
     rg
-    pvlink
+    pvdns
     stg
     pve
   ]

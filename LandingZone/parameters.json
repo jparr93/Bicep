@@ -5,7 +5,7 @@
         "naming": {
             "value": {
                 "prefix": "uks",
-                "prefix1": "prod"
+                "prefix1": "prod" 
             }
         },
         "resources": {
@@ -346,15 +346,9 @@
                         "name": "standard"
                     },
                     "tenantid": "6453880f-b587-4f4e-afd4-99b4ede5c65c",
-                    "accesspolicies": [
-                        {
-                            "permissions": {
-                              "keys": [
-                    ],
-                    "iprules":[
-                    ],
-                    "virtualnetworkrules": [
-                    ]
+                    "accesspolicies": [],
+                    "iprules": [],
+                    "virtualnetworkrules": []
                 }
             }
         }
